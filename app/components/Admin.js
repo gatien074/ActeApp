@@ -79,7 +79,7 @@ const actions = {
     { 
       name: "Attribuer des rôles", 
       icon: UserCheck, 
-      href: "/dashboardadmin/users/rôles",
+      href: "/dashboardadmin/users/rôle",
       description: "Gérer les rôles des utilisateurs",
       color: "bg-cyan-500 hover:bg-cyan-600" 
     },
