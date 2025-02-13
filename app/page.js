@@ -130,12 +130,13 @@ export default function LandingPage() {
             </h2>
             <div className="h-[30px] overflow-hidden mb-12">
               <div className="animate-carousel">
-                <p className="text-xl text-white font-medium h-[30px]">Simplifiez vos démarches administratives</p>
-                <p className="text-xl text-white font-medium h-[30px]">Gestion rapide et sécurisée</p>
-                <p className="text-xl text-white font-medium h-[30px]">Suivi en temps réel</p>
-                <p className="text-xl text-white font-medium h-[30px]">Accessibilité 24h/24 et 7j/7</p>
-                <p className="text-xl text-white font-medium h-[30px]">Zéro papier, 100% digital</p>
-                <p className="text-xl text-white font-medium h-[30px]">Service public modernisé</p>
+                <p className="text-xl text-white font-medium h-[30px] flex items-center justify-center">Simplifiez vos démarches administratives</p>
+                <p className="text-xl text-white font-medium h-[30px] flex items-center justify-center">Gestion rapide et sécurisée</p>
+                <p className="text-xl text-white font-medium h-[30px] flex items-center justify-center">Suivi en temps réel</p>
+                <p className="text-xl text-white font-medium h-[30px] flex items-center justify-center">Accessibilité 24h/24 et 7j/7</p>
+                <p className="text-xl text-white font-medium h-[30px] flex items-center justify-center">Zéro papier, 100% digital</p>
+                <p className="text-xl text-white font-medium h-[30px] flex items-center justify-center">Service public modernisé</p>
+                <p className="text-xl text-white font-medium h-[30px] flex items-center justify-center">Simplifiez vos démarches administratives</p>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
@@ -472,7 +473,7 @@ export default function LandingPage() {
                 </a>
                 <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-500 transition-colors">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.223-.548.223l.188-2.85 5.18-4.68c.223-.198-.054-.314-.346-.116l-6.38 4.02-2.7-.84c-.58-.183-.593-.577.124-.855l10.55-4.07c.485-.176.91.11.832.832z"/>
+                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.223-.548.223l.188-2.85 5.18-4.68c.223-.198-.054-.314-.346-.116l-6.38 4.02-2.7-.84c-.58-.183-.593-.577.124-.855l10.55-4.07c.485-.176.91.11.832.832.832z"/>
                   </svg>
                 </a>
               </div>

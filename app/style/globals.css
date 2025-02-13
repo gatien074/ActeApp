@@ -31,4 +31,36 @@ body {
 
 .animate-float {
   animation: float 6s ease-in-out infinite;
+}
+
+@keyframes carousel {
+  0% {
+    transform: translateY(0);
+  }
+  16.66% {
+    transform: translateY(-30px);
+  }
+  33.32% {
+    transform: translateY(-60px);
+  }
+  49.98% {
+    transform: translateY(-90px);
+  }
+  66.64% {
+    transform: translateY(-120px);
+  }
+  83.30% {
+    transform: translateY(-150px);
+  }
+  100% {
+    transform: translateY(-180px);
+  }
+}
+
+.animate-carousel {
+  animation: carousel 12s infinite;
+}
+
+.animate-carousel:hover {
+  animation-play-state: paused;
 } 
