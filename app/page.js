@@ -124,7 +124,7 @@ export default function LandingPage() {
             transition={{ delay: 0.3, duration: 0.8 }}
             className="relative z-10"
           >
-            <h2 className="lg:text-4xl text-lg shadow-md shadow-blue-600 font-extrabold text-white mt-10 text-center p-5 
+            <h2 className="lg:text-4xl text-lg shadow-md shadow-blue-600/25 font-extrabold text-white mt-10 text-center p-5 
                            text-shadow-lg leading-tight">
               Bienvenue sur notre plateforme de gestion <br/> des actes de naissance
             </h2>
@@ -147,7 +147,7 @@ export default function LandingPage() {
                 Espace Citoyen
               </PrimaryButton>
               </Link>
-              
+
               <Link href="">
               <SecondaryButton onClick={() => handleLogin("admin")} className="relative animate-shine bg-gradient-to-r from-green-500 via-green-300 to-green-500 bg-[length:200%_100%] text-white/70 hover:shadow-lg transition-all duration-300">
                 Espace Administrateur

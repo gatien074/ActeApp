@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Loading from '@/app/components/Loading'
+import Link from 'next/link'
 
 export default function Inscription() {
   const router = useRouter()
@@ -213,12 +214,15 @@ export default function Inscription() {
             </div>
 
             <div>
+            <Link href="/login">
               <button
                 type="submit"
                 className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transform transition-all hover:scale-[1.02]"
               >
                 S&apos;inscrire
               </button>
+              </Link>
+             
             </div>
           </form>
         </div>
