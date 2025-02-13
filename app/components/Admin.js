@@ -86,7 +86,7 @@ const actions = {
   ],
   stats: [{ name: "Consulter les statistiques", 
     icon: BarChart2,
-    href: "/dashboardadmin/stats",
+    href: "/dashboardadmin/statistiques",
     description: "Consulter les statistiques de l'application",
     color: "bg-indigo-500 hover:bg-indigo-600" 
   }],
