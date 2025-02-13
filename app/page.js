@@ -1,12 +1,14 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+
+import { motion } from "framer-motion"
 import { SiMaterialformkdocs } from "react-icons/si"
-import { PrimaryButton, SecondaryButton, NavButton } from "@/components/ui/Button"
 import { FileText, Edit, Trash2, List, Download } from "lucide-react"
+
+import { PrimaryButton, SecondaryButton, NavButton } from "./components/ui/Button"
 import PageLoading from "./components/PageLoading"
 
 export default function LandingPage() {
