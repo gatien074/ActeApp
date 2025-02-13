@@ -1,6 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
-import Button from '../components/ui/Button'
+import { useState } from 'react'
 import { 
   UserIcon, 
   DocumentIcon,
@@ -10,17 +9,62 @@ import {
   BellIcon
 } from '@heroicons/react/24/outline'
 
-export default function DashboardUsers() {
-  const [requests, setRequests] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [stats, setStats] = useState({
-    totalRequests: 0,
-    pendingRequests: 0,
-    completedRequests: 0,
-    todayRequests: 0
-  })
+// Données statiques pour simuler les demandes
+const mockRequests = [
+  {
+    id: 1,
+    userName: "Jean Dupont",
+    userEmail: "jean.dupont@email.com",
+    requestId: "ACT-2024-001",
+    status: "En attente",
+    createdAt: "2024-03-15T10:30:00Z",
+  },
+  {
+    id: 2,
+    userName: "Marie Martin",
+    userEmail: "marie.martin@email.com",
+    requestId: "ACT-2024-002",
+    status: "Validé",
+    createdAt: "2024-03-14T15:45:00Z",
+  },
+  {
+    id: 3,
+    userName: "Pierre Durant",
+    userEmail: "pierre.durant@email.com",
+    requestId: "ACT-2024-003",
+    status: "En cours",
+    createdAt: "2024-03-16T09:15:00Z",
+  },
+  {
+    id: 4,
+    userName: "Sophie Bernard",
+    userEmail: "sophie.bernard@email.com",
+    requestId: "ACT-2024-004",
+    status: "Validé",
+    createdAt: "2024-03-16T14:20:00Z",
+  },
+  {
+    id: 5,
+    userName: "Lucas Petit",
+    userEmail: "lucas.petit@email.com",
+    requestId: "ACT-2024-005",
+    status: "En attente",
+    createdAt: "2024-03-17T08:45:00Z",
+  }
+]
 
+// Statistiques statiques
+const mockStats = {
+  totalRequests: 150,
+  pendingRequests: 45,
+  completedRequests: 95,
+  todayRequests: 12
+}
+
+export default function DashboardUsers() {
+  const [searchTerm, setSearchTerm] = useState('')
+  const [requests] = useState(mockRequests)
+  const [stats] = useState(mockStats)
   const [notifications] = useState([
     {
       id: 1,
@@ -34,35 +78,13 @@ export default function DashboardUsers() {
     }
   ])
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [requestsResponse, statsResponse] = await Promise.all([
-          fetch('/api/requests'),
-          fetch('/api/requests/stats')
-        ])
-        if (!requestsResponse.ok || !statsResponse.ok) {
-          throw new Error('Erreur lors de la récupération des données')
-        }
-        const requestsData = await requestsResponse.json()
-        const statsData = await statsResponse.json()
-        
-        setRequests(requestsData)
-        setStats(statsData)
-      } catch (error) {
-        console.error('Erreur:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchData()
-  }, [])
-
-  const filteredRequests = requests.filter(request => 
-    request.userName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    request.requestId?.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredRequests = requests.filter(request => {
+    if (!searchTerm) return true
+    return (
+      request.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      request.requestId.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  })
 
   const getStatusColor = (status) => {
     const statusColors = {
@@ -72,14 +94,6 @@ export default function DashboardUsers() {
       'Rejeté': 'bg-red-100 text-red-800'
     }
     return statusColors[status] || 'bg-gray-100 text-gray-800'
-  }
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-      </div>
-    )
   }
 
   return (
@@ -92,12 +106,15 @@ export default function DashboardUsers() {
             <p className="mt-2 text-sm text-gray-600">Tableau de bord des demandes</p>
           </div>
           <div className="relative">
-            <Button type="button" className="relative">
+            <button
+              type="button"
+              className="relative p-2 rounded-lg hover:bg-gray-100"
+            >
               <BellIcon className="h-6 w-6" />
               <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">
                 {notifications.length}
               </span>
-            </Button>
+            </button>
           </div>
         </div>
 
@@ -167,12 +184,12 @@ export default function DashboardUsers() {
                 <MagnifyingGlassIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
               </div>
               <div className="flex gap-2">
-                <Button type="button" className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50">
+                <button type="button" className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
                   Filtrer
-                </Button>
-                <Button type="button" className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
+                </button>
+                <button type="button" className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
                   Nouvelle demande
-                </Button>
+                </button>
               </div>
             </div>
           </div>
@@ -209,7 +226,7 @@ export default function DashboardUsers() {
                         <div className="h-10 w-10 flex-shrink-0">
                           <img 
                             className="h-10 w-10 rounded-full"
-                            src={request.userAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(request.userName)}`}
+                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(request.userName)}`}
                             alt={request.userName}
                           />
                         </div>
@@ -233,20 +250,20 @@ export default function DashboardUsers() {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <Button 
+                      <button 
                         type="button"
                         onClick={() => console.log('Voir détails', request.id)}
                         className="text-indigo-600 hover:text-indigo-900 mr-4"
                       >
                         Voir détails
-                      </Button>
-                      <Button 
+                      </button>
+                      <button 
                         type="button"
                         onClick={() => console.log('Valider', request.id)}
                         className="text-green-600 hover:text-green-900"
                       >
                         Valider
-                      </Button>
+                      </button>
                     </td>
                   </tr>
                 ))}
