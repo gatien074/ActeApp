@@ -47,7 +47,7 @@ export default function ModifierActe() {
 
       <div className="bg-white rounded-lg shadow-md p-6">
         <form onSubmit={handleSearch} className="mb-6">
-          <div className="flex gap-4">
+          <div className="flex lg:flex-row flex-col gap-4">
             <input
               type="text"
               placeholder="Numéro d'acte"
@@ -57,7 +57,7 @@ export default function ModifierActe() {
             />
             <button
               type="submit"
-              className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 flex items-center gap-2"
+              className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 flex  items-center gap-2"
             >
               <Search size={20} />
               Rechercher

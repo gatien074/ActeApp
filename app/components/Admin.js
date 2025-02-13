@@ -63,7 +63,7 @@ const actions = {
     { 
       name: "Télécharger un acte en PDF", 
       icon: Download,
-      href: "/dashboardadmin/actes/telecharger",
+      href: "/dashboardadmin/actes/download",
       description: "Générer et télécharger un acte en format PDF",
       color: "bg-orange-500 hover:bg-orange-600"
     },

@@ -43,7 +43,7 @@ export default function ListeActes() {
 
       <div className="bg-white rounded-lg shadow-md p-6">
         <div className="mb-4">
-          <div className="flex gap-4">
+          <div className="flex lg:flex-row flex-col gap-4">
             <input
               type="text"
               placeholder="Rechercher un acte..."

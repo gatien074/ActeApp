@@ -89,7 +89,7 @@ export default function SupprimerActe() {
               />
               <button
                 type="submit"
-                className="w-full sm:w-auto bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 flex items-center justify-center gap-2 transition-colors duration-200"
+                className="w-full sm:w-auto bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 flex items-center  gap-2 transition-colors duration-200"
               >
                 <Search className="w-5 h-5" />
                 <span>Rechercher</span>
@@ -163,7 +163,7 @@ export default function SupprimerActe() {
               <p className="text-gray-600 text-center mb-6">
                 Êtes-vous sûr de vouloir supprimer cet acte ? Cette action est irréversible.
               </p>
-              <div className="flex gap-4">
+              <div className="flex lg:flex-row flex-col gap-4">
                 <button
                   onClick={() => setShowConfirmation(false)}
                   className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
