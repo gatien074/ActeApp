@@ -3,32 +3,48 @@ import { useState, useEffect } from 'react'
 import Button from '../components/ui/Button'
 import { 
   UserIcon, 
-  ChartBarIcon, 
-  UsersIcon, 
-  MagnifyingGlassIcon 
+  DocumentIcon,
+  ClockIcon, 
+  CheckCircleIcon,
+  MagnifyingGlassIcon,
+  BellIcon
 } from '@heroicons/react/24/outline'
 
 export default function DashboardUsers() {
-  const [users, setUsers] = useState([])
+  const [requests, setRequests] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [stats, setStats] = useState({
-    totalUsers: 0,
-    activeUsers: 0,
-    newUsersThisMonth: 0
+    totalRequests: 0,
+    pendingRequests: 0,
+    completedRequests: 0,
+    todayRequests: 0
   })
+
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      message: "Nouvelle demande d'acte de naissance",
+      time: "Il y a 5 minutes"
+    },
+    {
+      id: 2,
+      message: "Document validé en attente de signature",
+      time: "Il y a 30 minutes"
+    }
+  ])
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [usersResponse, statsResponse] = await Promise.all([
-          fetch('/api/users'),
-          fetch('/api/users/stats')
+        const [requestsResponse, statsResponse] = await Promise.all([
+          fetch('/api/requests'),
+          fetch('/api/requests/stats')
         ])
-        const usersData = await usersResponse.json()
+        const requestsData = await requestsResponse.json()
         const statsData = await statsResponse.json()
         
-        setUsers(usersData)
+        setRequests(requestsData)
         setStats(statsData)
         setLoading(false)
       } catch (error) {
@@ -40,10 +56,20 @@ export default function DashboardUsers() {
     fetchData()
   }, [])
 
-  const filteredUsers = users.filter(user => 
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredRequests = requests.filter(request => 
+    request.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    request.requestId.toLowerCase().includes(searchTerm.toLowerCase())
   )
+
+  const getStatusColor = (status) => {
+    const statusColors = {
+      'En attente': 'bg-yellow-100 text-yellow-800',
+      'En cours': 'bg-blue-100 text-blue-800',
+      'Validé': 'bg-green-100 text-green-800',
+      'Rejeté': 'bg-red-100 text-red-800'
+    }
+    return statusColors[status] || 'bg-gray-100 text-gray-800'
+  }
 
   if (loading) {
     return (
@@ -56,21 +82,44 @@ export default function DashboardUsers() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Tableau de bord utilisateurs</h1>
-          <p className="mt-2 text-sm text-gray-600">Gérez vos utilisateurs et consultez les statistiques</p>
+        {/* En-tête avec notifications */}
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Gestion des Actes de Naissance</h1>
+            <p className="mt-2 text-sm text-gray-600">Tableau de bord des demandes</p>
+          </div>
+          <div className="relative">
+            <Button className="relative">
+              <BellIcon className="h-6 w-6" />
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">
+                {notifications.length}
+              </span>
+            </Button>
+          </div>
         </div>
 
         {/* Statistiques */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="p-3 rounded-full bg-indigo-100">
-                <UsersIcon className="h-6 w-6 text-indigo-600" />
+                <DocumentIcon className="h-6 w-6 text-indigo-600" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Total Utilisateurs</p>
-                <p className="text-2xl font-semibold text-gray-900">{stats.totalUsers}</p>
+                <p className="text-sm font-medium text-gray-500">Total Demandes</p>
+                <p className="text-2xl font-semibold text-gray-900">{stats.totalRequests}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow p-6">
+            <div className="flex items-center">
+              <div className="p-3 rounded-full bg-yellow-100">
+                <ClockIcon className="h-6 w-6 text-yellow-600" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-gray-500">En Attente</p>
+                <p className="text-2xl font-semibold text-gray-900">{stats.pendingRequests}</p>
               </div>
             </div>
           </div>
@@ -78,11 +127,11 @@ export default function DashboardUsers() {
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="p-3 rounded-full bg-green-100">
-                <UserIcon className="h-6 w-6 text-green-600" />
+                <CheckCircleIcon className="h-6 w-6 text-green-600" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Utilisateurs Actifs</p>
-                <p className="text-2xl font-semibold text-gray-900">{stats.activeUsers}</p>
+                <p className="text-sm font-medium text-gray-500">Validées</p>
+                <p className="text-2xl font-semibold text-gray-900">{stats.completedRequests}</p>
               </div>
             </div>
           </div>
@@ -90,52 +139,55 @@ export default function DashboardUsers() {
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
               <div className="p-3 rounded-full bg-blue-100">
-                <ChartBarIcon className="h-6 w-6 text-blue-600" />
+                <UserIcon className="h-6 w-6 text-blue-600" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Nouveaux ce mois</p>
-                <p className="text-2xl font-semibold text-gray-900">{stats.newUsersThisMonth}</p>
+                <p className="text-sm font-medium text-gray-500">Aujourd'hui</p>
+                <p className="text-2xl font-semibold text-gray-900">{stats.todayRequests}</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Barre de recherche et actions */}
+        {/* Barre de recherche et filtres */}
         <div className="bg-white rounded-lg shadow mb-8">
           <div className="p-6">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div className="relative flex-1 max-w-md">
                 <input
                   type="text"
-                  placeholder="Rechercher un utilisateur..."
+                  placeholder="Rechercher une demande..."
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 <MagnifyingGlassIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
               </div>
-              <div className="mt-4 md:mt-0">
+              <div className="flex gap-2">
+                <Button className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50">
+                  Filtrer
+                </Button>
                 <Button className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
-                  Ajouter un utilisateur
+                  Nouvelle demande
                 </Button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Table des utilisateurs */}
+        {/* Table des demandes */}
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Utilisateur
+                  Demandeur
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Email
+                  N° Demande
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Date d&apos;inscription
+                  Date de demande
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Statut
@@ -146,51 +198,48 @@ export default function DashboardUsers() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredUsers.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50">
+              {filteredRequests.map((request) => (
+                <tr key={request.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="h-10 w-10 flex-shrink-0">
                         <img 
                           className="h-10 w-10 rounded-full" 
-                          src={user.avatar || `https://ui-avatars.com/api/?name=${user.name}`} 
-                          alt={user.name}
+                          src={request.userAvatar || `https://ui-avatars.com/api/?name=${request.userName}`}
+                          alt={request.userName}
                         />
                       </div>
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                        <div className="text-sm font-medium text-gray-900">{request.userName}</div>
+                        <div className="text-sm text-gray-500">{request.userEmail}</div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">{user.email}</div>
+                    <div className="text-sm text-gray-900">{request.requestId}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-500">
-                      {new Date(user.createdAt).toLocaleDateString()}
+                      {new Date(request.createdAt).toLocaleDateString()}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      user.isActive 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {user.isActive ? 'Actif' : 'Inactif'}
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(request.status)}`}>
+                      {request.status}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <Button 
-                      onClick={() => console.log('Modifier', user.id)}
+                      onClick={() => console.log('Voir détails', request.id)}
                       className="text-indigo-600 hover:text-indigo-900 mr-4"
                     >
-                      Modifier
+                      Voir détails
                     </Button>
                     <Button 
-                      onClick={() => console.log('Supprimer', user.id)}
-                      className="text-red-600 hover:text-red-900"
+                      onClick={() => console.log('Valider', request.id)}
+                      className="text-green-600 hover:text-green-900"
                     >
-                      Supprimer
+                      Valider
                     </Button>
                   </td>
                 </tr>
