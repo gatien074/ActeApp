@@ -13,6 +13,7 @@ import {
   MapPinIcon,
   ArrowRightIcon
 } from '@heroicons/react/24/outline'
+import Link from 'next/link'
 
 // Données statiques pour simuler les demandes du citoyen
 const mockRequests = [
@@ -125,9 +126,13 @@ export default function DashboardUsers() {
                 whileTap={{ scale: 0.95 }}
                 className="flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 hover:bg-indigo-100 text-indigo-600 transition-colors"
               >
-                <UserCircleIcon className="h-5 w-5" />
+                <Link href="/profile" className='flex items-center gap-2'>
+              <UserCircleIcon className="h-5 w-5" />
                 <span className="hidden sm:inline">Mon Profil</span>
+                </Link>
               </motion.button>
+              
+                
             </div>
           </div>
         </div>
