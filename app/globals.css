@@ -1,1 +1,36 @@
- 
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+.animate-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.animate-shine::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 30%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  animation: shine-move 4s infinite;
+}
+
+@keyframes shine-move {
+  0% {
+    left: -30%;
+  }
+  10%, 100% {
+    left: 130%;
+  }
+} 
