@@ -21,7 +21,7 @@ export default function DashboardUsers() {
     todayRequests: 0
   })
 
-  const [notifications, setNotifications] = useState([
+  const [notifications] = useState([
     {
       id: 1,
       message: "Nouvelle demande d'acte de naissance",
@@ -41,14 +41,17 @@ export default function DashboardUsers() {
           fetch('/api/requests'),
           fetch('/api/requests/stats')
         ])
+        if (!requestsResponse.ok || !statsResponse.ok) {
+          throw new Error('Erreur lors de la récupération des données')
+        }
         const requestsData = await requestsResponse.json()
         const statsData = await statsResponse.json()
         
         setRequests(requestsData)
         setStats(statsData)
-        setLoading(false)
       } catch (error) {
-        console.error('Erreur lors du chargement des données:', error)
+        console.error('Erreur:', error)
+      } finally {
         setLoading(false)
       }
     }
@@ -57,8 +60,8 @@ export default function DashboardUsers() {
   }, [])
 
   const filteredRequests = requests.filter(request => 
-    request.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    request.requestId.toLowerCase().includes(searchTerm.toLowerCase())
+    request.userName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    request.requestId?.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   const getStatusColor = (status) => {
@@ -89,7 +92,7 @@ export default function DashboardUsers() {
             <p className="mt-2 text-sm text-gray-600">Tableau de bord des demandes</p>
           </div>
           <div className="relative">
-            <Button className="relative">
+            <Button type="button" className="relative">
               <BellIcon className="h-6 w-6" />
               <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">
                 {notifications.length}
@@ -142,7 +145,7 @@ export default function DashboardUsers() {
                 <UserIcon className="h-6 w-6 text-blue-600" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">Aujourd'hui</p>
+                <p className="text-sm font-medium text-gray-500">Aujourd&apos;hui</p>
                 <p className="text-2xl font-semibold text-gray-900">{stats.todayRequests}</p>
               </div>
             </div>
@@ -164,10 +167,10 @@ export default function DashboardUsers() {
                 <MagnifyingGlassIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
               </div>
               <div className="flex gap-2">
-                <Button className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50">
+                <Button type="button" className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50">
                   Filtrer
                 </Button>
-                <Button className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
+                <Button type="button" className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
                   Nouvelle demande
                 </Button>
               </div>
@@ -177,75 +180,79 @@ export default function DashboardUsers() {
 
         {/* Table des demandes */}
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Demandeur
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  N° Demande
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Date de demande
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Statut
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredRequests.map((request) => (
-                <tr key={request.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="h-10 w-10 flex-shrink-0">
-                        <img 
-                          className="h-10 w-10 rounded-full" 
-                          src={request.userAvatar || `https://ui-avatars.com/api/?name=${request.userName}`}
-                          alt={request.userName}
-                        />
-                      </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">{request.userName}</div>
-                        <div className="text-sm text-gray-500">{request.userEmail}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{request.requestId}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">
-                      {new Date(request.createdAt).toLocaleDateString()}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(request.status)}`}>
-                      {request.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <Button 
-                      onClick={() => console.log('Voir détails', request.id)}
-                      className="text-indigo-600 hover:text-indigo-900 mr-4"
-                    >
-                      Voir détails
-                    </Button>
-                    <Button 
-                      onClick={() => console.log('Valider', request.id)}
-                      className="text-green-600 hover:text-green-900"
-                    >
-                      Valider
-                    </Button>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Demandeur
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    N° Demande
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Date de demande
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Statut
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredRequests.map((request) => (
+                  <tr key={request.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="h-10 w-10 flex-shrink-0">
+                          <img 
+                            className="h-10 w-10 rounded-full"
+                            src={request.userAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(request.userName)}`}
+                            alt={request.userName}
+                          />
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900">{request.userName}</div>
+                          <div className="text-sm text-gray-500">{request.userEmail}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{request.requestId}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-500">
+                        {new Date(request.createdAt).toLocaleDateString('fr-FR')}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(request.status)}`}>
+                        {request.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <Button 
+                        type="button"
+                        onClick={() => console.log('Voir détails', request.id)}
+                        className="text-indigo-600 hover:text-indigo-900 mr-4"
+                      >
+                        Voir détails
+                      </Button>
+                      <Button 
+                        type="button"
+                        onClick={() => console.log('Valider', request.id)}
+                        className="text-green-600 hover:text-green-900"
+                      >
+                        Valider
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
