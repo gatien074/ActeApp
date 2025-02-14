@@ -36,12 +36,12 @@ export default function TelechargerActe() {
         <Link href="/dashboardadmin" className="text-indigo-600 hover:text-indigo-800 mr-4">
           <ArrowLeft size={24} />
         </Link>
-        <h1 className="text-2xl font-bold text-gray-800">Télécharger un acte de naissance</h1>
+        <h1 className="text-xl lg:text-2xl font-bold text-gray-800">Télécharger un acte de naissance</h1>
       </div>
 
       <div className="bg-white rounded-lg shadow-md p-6 ">
         <form onSubmit={handleSearch} className="mb-6">
-          <div className="flex gap-4">
+          <div className="flex lg:flex-row flex-col gap-4">
             <input
               type="text"
               placeholder="Numéro d&apos;acte"

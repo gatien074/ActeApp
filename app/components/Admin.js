@@ -72,14 +72,14 @@ const actions = {
     { 
       name: "Créer un compte admin", 
       icon: UserPlus, 
-      href: "/dashboardadmin/users/creer",
+      href: "/dashboardadmin/users/creersùùùùùùùùùùùùù",
       description: "Créer un nouveau compte administrateur",
       color: "bg-teal-500 hover:bg-teal-600" 
     },
     { 
       name: "Attribuer des rôles", 
       icon: UserCheck, 
-      href: "/dashboardadmin/users/rôle",
+      href: "/dashboardadmin/users/role",
       description: "Gérer les rôles des utilisateurs",
       color: "bg-cyan-500 hover:bg-cyan-600" 
     },
