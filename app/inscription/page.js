@@ -3,6 +3,9 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Loading from '@/app/components/Loading'
 import Link from 'next/link'
+import { auth, db, storage } from '@/app/firebase/config'
+import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
 
 export default function Inscription() {
   const router = useRouter()
@@ -18,6 +21,8 @@ export default function Inscription() {
     telephone: ''
   })
   const [error, setError] = useState('')
+  const [conditions, setConditions] = useState(false)
+  const [force, setForce] = useState(0)
 
   const handleChange = (e) => {
     setFormData({
@@ -26,41 +31,87 @@ export default function Inscription() {
     })
   }
 
+  const verifierForceMotDePasse = (password) => {
+    let force =0
+    if (password.length >= 8) force++
+    if (password.match(/[a-z]+/)) force++
+    if (password.match(/[A-Z]+/)) force++
+    if (password.match(/[0-9]+/)) force++
+    if (password.match(/[$@#&!]+/)) force++
+    setForce(force)
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsLoading(true)
     setError('')
 
-    if (formData.motDePasse !== formData.confirmMotDePasse) {
-      setError('Les mots de passe ne correspondent pas')
+    if (!conditions) {
+      setError('Vous devez accepter les conditions d\'utilisation')
+      setIsLoading(false)
+      return
+    }
+
+    if (force < 6) {
+      setError('Le mot de passe n\'est pas assez sécurisé')
       setIsLoading(false)
       return
     }
 
     try {
-      const response = await fetch('/api/inscription', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.motDePasse
+      )
+
+     
+      await setDoc(doc(db, 'utilisateurs', userCredential.user.uid), {
+        nom: formData.nom,
+        prenom: formData.prenom,
+        email: formData.email,
+        telephone: formData.telephone,
+        role: formData.role,
+        createdAt: serverTimestamp(),
+        lastLogin: serverTimestamp(),
+        status: 'actif'
       })
 
-      if (response.ok) {
-        router.push('/connexion')
-      } else {
-        const data = await response.json()
-        setError(data.message || 'Une erreur est survenue lors de l\'inscription')
-      }
+      await fetch('/api/send-welcome-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: formData.email, nom: formData.nom })
+      })
+
+      router.push('/connexion')
     } catch (err) {
-      setError('Une erreur est survenue lors de l\'inscription')
+      console.error(err)
+      handleFirebaseError(err)
     } finally {
       setIsLoading(false)
     }
   }
 
+  const handleFirebaseError = (error) => {
+    switch (error.code) {
+      case 'auth/email-already-in-use':
+        setError('Cette adresse email est déjà utilisée')
+        break
+      case 'auth/invalid-email':
+        setError('Adresse email invalide')
+        break
+      case 'auth/operation-not-allowed':
+        setError('Opération non autorisée')
+        break
+      case 'auth/weak-password':
+        setError('Le mot de passe est trop faible')
+        break
+      default:
+        setError('Une erreur est survenue lors de l\'inscription')
+    }
+  }
+
   useEffect(() => {
-    // Simuler un chargement initial de la page
     setTimeout(() => {
       setPageLoading(false)
       setIsLoading(false)
@@ -194,7 +245,10 @@ export default function Inscription() {
                 required
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 value={formData.motDePasse}
-                onChange={handleChange}
+                onChange={(e) => {
+                  handleChange(e)
+                  verifierForceMotDePasse(e.target.value)
+                }}
               />
             </div>
 
@@ -213,16 +267,54 @@ export default function Inscription() {
               />
             </div>
 
+            
+
             <div>
-            <Link href="/login">
-              <button
-                type="submit"
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transform transition-all hover:scale-[1.02]"
-              >
-                S&apos;inscrire
-              </button>
-              </Link>
              
+              <div className="flex space-x-1 mb-2">
+                {[...Array(5)].map((_, index) => (
+                  <div
+                    key={index}
+                    className={`h-2 w-full rounded ${
+                      index < force ? 'bg-green-500' : 'bg-gray-200'
+                    }`}
+                  />
+                ))}
+              </div>
+              <p className="text-sm text-gray-500">
+                Force du mot de passe: {
+                  force === 0 ? 'Très faible' :
+                  force === 0 ? 'Faible' :
+                  force === 5 ? 'Moyen' :
+                  force === 6 ? 'Fort' :
+                  force === 7 ? 'fort' : 
+                  force === 8 ? 'Très fort' : 'Excellent'
+                }
+              </p>
+            </div>
+
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="conditions"
+                checked={conditions}
+                onChange={(e) => setConditions(e.target.checked)}
+                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+              />
+              <label htmlFor="conditions" className="ml-2 block text-sm text-gray-900">
+                J&apos;accepte les conditions d&apos;utilisation
+              </label>
+            </div>
+
+            <div>
+              <Link href="/login">
+                <button
+                  type="submit"
+                  className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transform transition-all hover:scale-[1.02]"
+                >
+                  S&apos;inscrire
+                </button>
+              </Link>
             </div>
           </form>
         </div>

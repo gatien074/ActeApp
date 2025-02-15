@@ -190,16 +190,7 @@ export default function DashboardUsers() {
                       <p className="text-gray-900">{userInfo.phone}</p>
                     </div>
                   </motion.div>
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    className="flex items-start space-x-3 p-4 rounded-xl bg-gray-50 md:col-span-2 transition-all duration-200"
-                  >
-                    <MapPinIcon className="h-6 w-6 text-indigo-500" />
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Adresse</p>
-                      <p className="text-gray-900">{userInfo.address}</p>
-                    </div>
-                  </motion.div>
+                 
                 </div>
               </div>
             </motion.div>
