@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Loading from '@/app/components/Loading'
 import Link from 'next/link'
-import { auth, db, storage } from '@/app/firebase/config'
+import { auth, db, storage } from '@/app/db/config'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
 

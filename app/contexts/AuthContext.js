@@ -1,11 +1,15 @@
 'use client'
-import { createContext, useContext } from 'react';
-import { useAuth } from '../hooks/useAuth';
+import { createContext, useContext, useState } from 'react';
+import useAuth from '../hooks/useAuth';
 
 const AuthContext = createContext({});
 
 export function AuthProvider({ children }) {
   const auth = useAuth();
+  
+  if (!auth) {
+    return null;
+  }
 
   return (
     <AuthContext.Provider value={auth}>

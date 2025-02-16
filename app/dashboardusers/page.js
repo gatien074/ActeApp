@@ -121,15 +121,16 @@ export default function DashboardUsers() {
                   {notifications.length}
                 </span>
               </motion.button>
-              <motion.button
+              <motion.button 
+                onClick={() => router.push('/profile')}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 hover:bg-indigo-100 text-indigo-600 transition-colors"
               >
-                <Link href="/profile" className='flex items-center gap-2'>
+               
               <UserCircleIcon className="h-5 w-5" />
                 <span className="hidden sm:inline">Mon Profil</span>
-                </Link>
+                
               </motion.button>
               
                 
